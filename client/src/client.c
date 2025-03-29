@@ -50,6 +50,8 @@ int main(void)
 
 	// Enviamos al servidor el valor de CLAVE como mensaje
 
+	enviar_mensaje(valor, conexion);
+	
 	// Armamos y enviamos el paquete
 	paquete(conexion);
 
@@ -96,10 +98,9 @@ void leer_consola(t_log* logger)
 
 	// ¡No te olvides de liberar las lineas antes de regresar!
 
-	while (strlen(leido) == 1) {
+	while (strcmp(leido, "") != 0) {
         log_info(logger, "%s", leido);
         free(leido);
-
         leido = readline("> ");
     }
 
@@ -113,10 +114,22 @@ void paquete(int conexion)
 	t_paquete* paquete;
 
 	// Leemos y esta vez agregamos las lineas al paquete
+	
+	paquete = crear_paquete();
 
+    // Leer de consola y agregar al paquete hasta que la línea esté vacía
+    leido = readline("> ");
+    while (strcmp(leido, "") != 0) {
+        agregar_a_paquete(paquete, leido, strlen(leido) + 1); // +1 por el \0
+        free(leido);
+        leido = readline("> ");
+    }
 
 	// ¡No te olvides de liberar las líneas y el paquete antes de regresar!
-	
+	free(leido); // liberar la línea vacía
+
+    enviar_paquete(paquete, conexion);
+    eliminar_paquete(paquete);
 }
 
 void terminar_programa(int conexion, t_log* logger, t_config* config)
@@ -127,4 +140,6 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
     log_destroy(logger);
 
     config_destroy(config);
+
+	liberar_conexion(conexion);
 }
