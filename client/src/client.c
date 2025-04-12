@@ -33,6 +33,11 @@ int main(void)
 	// Loggeamos el valor de config
 
 	valor = config_get_string_value(config, "CLAVE");
+	
+	// Establecemos los valores para la conección real
+	ip = config_get_string_value(config, "IP");
+	puerto = config_get_string_value(config, "PUERTO");
+
 
 	log_info(logger, "El valor de la clave es: %s", valor);
 
